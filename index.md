@@ -1,6 +1,6 @@
 ## Welcome to SynergyCrowds Pages
 
-[Reqs](https://synergycrowds.github.io/CM1-GACluster/reqs)
+[Reqs](https://synergycrowds.github.io/CM1-GACluster/reqs) 
 
 You can use the [editor on GitHub](https://github.com/synergycrowds/CM1-GACluster/edit/master/index.md) to maintain and preview the content for your website in Markdown files.
 
