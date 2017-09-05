@@ -1,4 +1,4 @@
-<< [Infrastructure](../../infrastructure/docs/index.md)
+<< [Infrastructure](../../infrastructure/docs/index)
 
 
 ## Overview
