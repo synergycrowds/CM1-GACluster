@@ -11,8 +11,10 @@ The default service runs on historical price data from the same period of time f
 
 #### Implementation approaches
 
-** 1. MapReduce **
+**1. MapReduce**
 
-** 2. Isles **
+**2. Isles**
 
 ![isles](images/isles-orientedGraph.png)
+
+![isles](images/isles-cellularTopology.png)
