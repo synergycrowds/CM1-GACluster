@@ -7,10 +7,12 @@ clusterizing the set of items (i.e. digital currencies) into a number of cluster
 
 The default service runs on historical price data from the same period of time for all analyzed digital currencies.
 
-### Implementation approaches
+### Performance
 
-#### 1. MapReduce
+#### Implementation approaches
 
-#### 2. Isles
+** 1. MapReduce **
+
+** 2. Isles **
 
 ![isles](images/isles-orientedGraph.png)
