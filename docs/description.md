@@ -1,3 +1,6 @@
+<< [Infrastructure](../../infrastructure/docs/index.md)
+
+
 ## Overview
 
 This method is based on a Genetic Algorithm implementation. Its evolutionary approach aims at
