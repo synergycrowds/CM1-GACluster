@@ -1,6 +1,6 @@
-[< CM1-GACluster](../)
-[<< Infrastructure](../../infrastructure/)
 
+[<< Infrastructure](../../infrastructure/)  |  
+[< CM1-GACluster](../)
 
 ## Overview
 
