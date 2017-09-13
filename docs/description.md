@@ -15,6 +15,7 @@ The default service runs on historical price data from the same period of time f
 Prerequisites:
 * Let S be the set of initial items of size NS
 * Let NC be the number of generated clusters
+* Let t be a time interval on which deviation is considered
 
 The algorithm performs the following steps:  
 1. Randomly select NC items from the initial items set S. These will represent the individuals of the initial population;
