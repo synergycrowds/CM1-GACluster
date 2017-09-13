@@ -14,8 +14,8 @@ The default service runs on historical price data from the same period of time f
 ## Algorithm
 Prerequisites:
 * The user can configure a set of parameters:
-* let S be the set of initial items of size NS
-* let NC be the number of generated clusters
+* Let S be the set of initial items of size NS
+* Let NC be the number of generated clusters
 
 The algorithm performs the following steps:  
 1. Randomly select NC items from the initial items set S. These will represent the individuals of the initial population;
