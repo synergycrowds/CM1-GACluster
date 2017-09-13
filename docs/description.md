@@ -13,7 +13,6 @@ The default service runs on historical price data from the same period of time f
 
 ## Algorithm
 Prerequisites:
-* The user can configure a set of parameters:
 * Let S be the set of initial items of size NS
 * Let NC be the number of generated clusters
 
