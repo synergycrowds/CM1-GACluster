@@ -52,6 +52,9 @@
         <class>tandemx.model.Exchange</class>
         <class>tandemx.model.CurrencyType</class>
         <class>tandemx.model.Symbol</class>
+        <class>tandemx.model.CurrencyPair</class>
+        <class>tandemx.model.ExchangeCurrencyPair</class>
+        <class>tandemx.model.HistdataPriceDay</class>
 
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
 
