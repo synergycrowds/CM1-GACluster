@@ -9,9 +9,8 @@ import tandemx.model.Symbol;
 import tandemx.rdm.datasource.KaikoCredentials;
 import tandemx.rdm.datasource.KaikoHelper;
 import tandemx.rdm.obtain.MarketDataObtainer;
-import tandemx.rdm.util.DataDifferences;
 
-import java.util.ArrayList;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -52,7 +51,7 @@ public class Engine {
             dbaMarketData = new DBAMarketDataHib(dbName);
             KaikoHelper kaiko = new KaikoHelper(KaikoCredentials.API_KEY);
             MarketDataObtainer marketDataObtainer = new MarketDataObtainer(dbaMarketData, kaiko);
-            marketDataObtainer.obtain();
+            marketDataObtainer.obtain(LocalDate.now());
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -94,5 +93,4 @@ public class Engine {
             }
         }
     }
-
 }

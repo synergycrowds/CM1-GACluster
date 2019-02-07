@@ -10,6 +10,11 @@ import java.util.List;
 import java.util.Map;
 
 public class MapsCreator {
+    /**
+     * Create a mapping between currency types names and ids (map[name] = id)
+     * @param currencyTypes list of currency types
+     * @return the mapping
+     */
     public static Map<String, Integer> createCurrencyTypeNameToId(List<CurrencyType> currencyTypes) {
         Map<String, Integer> name2id = new HashMap<>();
         for (CurrencyType currencyType: currencyTypes) {
@@ -18,6 +23,11 @@ public class MapsCreator {
         return name2id;
     }
 
+    /**
+     * Create a mapping between symbols names and ids (map[name] = id)
+     * @param symbols list of symbols
+     * @return the mapping
+     */
     public static Map<String, Integer> createSymbolNameToId(List<Symbol> symbols) {
         Map<String, Integer> name2id = new HashMap<>();
         for (Symbol symbol: symbols) {
@@ -26,6 +36,11 @@ public class MapsCreator {
         return name2id;
     }
 
+    /**
+     * Create a mapping between exchange names and ids (map[name] = id)
+     * @param exchanges list of exchanges
+     * @return the mapping
+     */
     public static Map<String, Integer> createExchangeNameToId(List<Exchange> exchanges) {
         Map<String, Integer> name2id = new HashMap<>();
         for (Exchange exchange: exchanges) {
@@ -34,6 +49,12 @@ public class MapsCreator {
         return name2id;
     }
 
+    /**
+     * Create a mapping between currency pair names and ids (map[leftSymbolName][rightSymbolName] = currencyPairId)
+     * @param currencyPairs list of currency pairs
+     * @param symbolsIdToName mapping between symbols names and ids
+     * @return the mapping
+     */
     public static Map<String, Map<String, Integer>> createCurrencyPairNamesToId(List<CurrencyPair> currencyPairs,
                                                                                 Map<Integer, String> symbolsIdToName) {
         // TODO: 1/16/2019 maybe create a string -> int mapping by implementing a pair string representation
@@ -50,6 +71,11 @@ public class MapsCreator {
         return names2id;
     }
 
+    /**
+     * Create a mapping between currency pairs ids and instances of the class (map[id] = instance)
+     * @param currencyPairs
+     * @return the mapping
+     */
     public static Map<Integer, CurrencyPair> createCurrencyPairIdToInstance(List<CurrencyPair> currencyPairs) {
         Map<Integer, CurrencyPair> id2instance = new HashMap<>();
         for (CurrencyPair currencyPair: currencyPairs) {

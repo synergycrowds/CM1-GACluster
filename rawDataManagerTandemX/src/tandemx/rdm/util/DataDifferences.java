@@ -11,6 +11,12 @@ import java.util.List;
 import java.util.Map;
 
 public class DataDifferences {
+    /**
+     * Get the list of symbols from a list which are not present in the map
+     * @param symbolsMap mapping between symbols names and IDs
+     * @param symbols list of symbols from which new symbols must be selected
+     * @return the list of symbols from the list which are not in the map
+     */
     public static List<Symbol> getNewSymbols(Map<String, Integer> symbolsMap, List<Symbol> symbols) {
         List<Symbol> newSymbols = new ArrayList<>();
         for (Symbol symbol: symbols) {
@@ -21,6 +27,12 @@ public class DataDifferences {
         return newSymbols;
     }
 
+    /**
+     * Get the list of exchanges from a list which are not present in the map
+     * @param exchangesMap mapping between exchanges names and IDs
+     * @param exchanges list of exchanges from which new exchanges must be selected
+     * @return the list of exchanges from the list which are not in the map
+     */
     public static List<Exchange> getNewExchanges(Map<String, Integer> exchangesMap, List<Exchange> exchanges) {
         List<Exchange> newExchanges = new ArrayList<>();
         for (Exchange exchange: exchanges) {
@@ -32,10 +44,11 @@ public class DataDifferences {
     }
 
     /**
-     * Sorts lists
-     * @param currencyPairsFirst
-     * @param currencyPairsSecond
-     * @return
+     * Get the list of currency pairs from the second list which are not present in the first list. As a side effect,
+     * this method sorts both lists according to the IDs of the left symbols and then to the IDs of the right symbols.
+     * @param currencyPairsFirst fist list of currency pairs
+     * @param currencyPairsSecond second list of currency pairs, from which the pairs that are no present in the first list must be selected
+     * @return a list of currency pairs which are in the second list, but not the first
      */
     public static List<CurrencyPair> getNewCurrencyPairs(List<CurrencyPair> currencyPairsFirst, List<CurrencyPair> currencyPairsSecond) {
         List<CurrencyPair> newCurrencyPairs = new ArrayList<>();
@@ -70,10 +83,12 @@ public class DataDifferences {
     }
 
     /**
-     * Sorts lists
-     * @param exchangeCurrencyPairsFirst
-     * @param exchangeCurrencyPairsSecond
-     * @return
+     * Get the list of exchange-currency-pair combinations from the second list which are not present in the first list.
+     * As a side effect, this method sorts both lists according to the IDs of the exchanges and then to the IDs of the
+     * pairs.
+     * @param exchangeCurrencyPairsFirst first list of exchange-currency-pair combinations
+     * @param exchangeCurrencyPairsSecond second list of exchange-currency-pair combinations, from which the combinations that are no present in the first list must be selected
+     * @return a list of exchange-currency-pair combinations which are in the second list, but not the first
      */
     public static List<ExchangeCurrencyPair> getNewExchangeCurrencyPairs(List<ExchangeCurrencyPair> exchangeCurrencyPairsFirst,
                                                                          List<ExchangeCurrencyPair> exchangeCurrencyPairsSecond) {
