@@ -2,13 +2,17 @@ package tandemx.rdm.main;
 
 import tandemx.db.DBAMarketData;
 import tandemx.db.DBAMarketDataHib;
+import tandemx.db.DBATreeParams;
+import tandemx.db.DBATreeParamsHib;
 import tandemx.db.util.Constants;
 import tandemx.db.util.MapsCreator;
 import tandemx.model.Exchange;
 import tandemx.model.Symbol;
+import tandemx.model.treeparams.RDMParams;
 import tandemx.rdm.datasource.KaikoCredentials;
 import tandemx.rdm.datasource.KaikoHelper;
 import tandemx.rdm.obtain.MarketDataObtainer;
+import tandemx.rdm.util.RDMTreeParams;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -22,8 +26,8 @@ public class Engine {
         }
         try {
             Integer treeId = Integer.parseInt(args[0]);
-//            RDMTreeParams params = getParams(treeId);
-            (new Engine()).run();
+            RDMTreeParams params = getParams(treeId);
+            (new Engine()).run(params);
         } catch (NumberFormatException ex) {
             System.out.println("Tree ID must be an integer");
         } catch (Exception ex) {
@@ -31,8 +35,8 @@ public class Engine {
         }
     }
 
-    private void run() {
-        long millisecondsToWait = 60000;//params.getWaitBtwSessions();
+    private void run(RDMTreeParams params) {
+        long millisecondsToWait = params.getWaitBtwSessions();
         while (true) {
             System.out.println("Session started");
             runMarketDataObtainingSession(Constants.DB_NAME_BASE_MARKET_DATA_KAIKO);
@@ -57,6 +61,24 @@ public class Engine {
         } finally {
             if (dbaMarketData != null) {
                 dbaMarketData.close();
+            }
+        }
+    }
+
+    private static RDMTreeParams getParams(int treeId) throws Exception {
+        DBATreeParams dbaTreeParams = null;
+        try {
+            dbaTreeParams = new DBATreeParamsHib();
+            RDMParams rdmParams = dbaTreeParams.getRDMParamsById(treeId);
+
+            if (rdmParams == null) {
+                throw new Exception("No parameters with this tree id");
+            }
+
+            return new RDMTreeParams(rdmParams.getWaitBtwSessions());
+        } finally {
+            if (dbaTreeParams != null) {
+                dbaTreeParams.close();
             }
         }
     }
