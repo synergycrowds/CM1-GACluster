@@ -8,8 +8,8 @@ package util.dataNormalizer.db.entity;
 import java.sql.Timestamp;
 
 /**
- *
- * @author Mircea The normalized price for a currency pair.
+ * The normalized price for a currency pair.
+ * @author Mircea 
  */
 public class ECPNormalizedPrice {
 
