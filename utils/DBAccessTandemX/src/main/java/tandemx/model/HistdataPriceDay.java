@@ -44,6 +44,9 @@ public class HistdataPriceDay {
 //    @Column(name = "volumeto")
 //    private Double volumeTo;
 
+    @Column(name = "normalized_price")
+    private Double normalizedPrice;
+
     public HistdataPriceDay() {
     }
 
@@ -101,5 +104,13 @@ public class HistdataPriceDay {
 
     public void setPrice(Double price) {
         this.price = price;
+    }
+
+    public Double getNormalizedPrice() {
+        return normalizedPrice;
+    }
+
+    public void setNormalizedPrice(Double normalizedPrice) {
+        this.normalizedPrice = normalizedPrice;
     }
 }

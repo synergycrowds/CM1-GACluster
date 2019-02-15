@@ -2,6 +2,7 @@ package tandemx.db;
 
 import tandemx.model.*;
 
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 
@@ -89,4 +90,30 @@ public interface DBAMarketData {
      * @return most recent entry; null if no extry exists in the database
      */
     HistdataPriceDay getMostRecentHistdataPriceDay();
+
+    /**
+     * Get the most recent (according to the timestamp field) histdata_price_day entry which has a non-null value for
+     * the normalized price
+     * @param exchangeId id of the exchange from which data is considered
+     * @param currencyPairId id of currency pair for which data is considered
+     * @return most recent histdata_price_day entry with non-null normalized price and the exchange id and currency pair id equal to the given ones; null if no such entry exists
+     */
+    HistdataPriceDay getLastNormalizedHistdataPriceDay(Integer exchangeId, Integer currencyPairId);
+
+    /**
+     * Get the list of histdata_price_day entries which have a later timestamp than a given one, ordered by the timestamp
+     * @param exchangeId id of exchange from which data is considered
+     * @param currencyPairId id of currency pair for which data is considered
+     * @param timestamp timestamp which must be strictly earlier than the timestamps of any returned entries
+     * @return list of histdata_price_day entries with the timestamp later than the given one and the exchange id and currency pair id equal to the given ones
+     */
+    List<HistdataPriceDay> getHistDataPriceDayAfterTimestamp(Integer exchangeId, Integer currencyPairId, LocalDate timestamp);
+
+    /**
+     * Get the list of histdata_price_day entries which have a certain exchange ID and currency pair ID, ordered by the timestamp
+     * @param exchangeId id of exchange from which data is considered
+     * @param currencyPairId id of currency pair for which data is considered
+     * @return list of histdata_price_day entries with the exchange id and currency pair id equal to the given ones, ordered by timestamp
+     */
+    List<HistdataPriceDay> getHistdataPriceDayForExchangeCurrencyPair(Integer exchangeId, Integer currencyPairId);
 }

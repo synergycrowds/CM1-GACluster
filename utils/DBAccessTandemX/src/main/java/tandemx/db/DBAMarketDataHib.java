@@ -6,6 +6,7 @@ import tandemx.model.*;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 
@@ -178,5 +179,65 @@ public class DBAMarketDataHib implements DBAMarketData {
         manager.getTransaction().commit();
         manager.close();
         return result;
+    }
+
+    @Override
+    public HistdataPriceDay getLastNormalizedHistdataPriceDay(Integer exchangeId, Integer currencyPairId) {
+        final EntityManager manager = factory.createEntityManager();
+        manager.getTransaction().begin();
+
+        List<HistdataPriceDay> histdataPriceDays = (List<HistdataPriceDay>) manager
+                .createQuery("select h from HistdataPriceDay h where h.exchangeId = :excId and " +
+                        "h.currencyPairId = :cpId and h.normalizedPrice != null order by h.timestamp desc")
+                .setMaxResults(1)
+                .setParameter("excId", exchangeId)
+                .setParameter("cpId", currencyPairId)
+                .getResultList();
+
+        HistdataPriceDay result;
+        if (histdataPriceDays.size() <= 0) {
+            result = null;
+        } else {
+            result = histdataPriceDays.get(0);
+        }
+
+        manager.getTransaction().commit();
+        manager.close();
+        return result;
+    }
+
+    @Override
+    public List<HistdataPriceDay> getHistDataPriceDayAfterTimestamp(Integer exchangeId, Integer currencyPairId, LocalDate timestamp) {
+        final EntityManager manager = factory.createEntityManager();
+        manager.getTransaction().begin();
+
+        List<HistdataPriceDay> histdataPriceDays = (List<HistdataPriceDay>) manager
+                .createQuery("select h from HistdataPriceDay h where h.exchangeId = :excId and  " +
+                        "h.currencyPairId = :cpId and h.timestamp > :tmstp order by h.timestamp")
+                .setParameter("excId", exchangeId)
+                .setParameter("cpId", currencyPairId)
+                .setParameter("tmstp", timestamp)
+                .getResultList();
+
+        manager.getTransaction().commit();
+        manager.close();
+        return histdataPriceDays;
+    }
+
+    @Override
+    public List<HistdataPriceDay> getHistdataPriceDayForExchangeCurrencyPair(Integer exchangeId, Integer currencyPairId) {
+        final EntityManager manager = factory.createEntityManager();
+        manager.getTransaction().begin();
+
+        List<HistdataPriceDay> histdataPriceDays = (List<HistdataPriceDay>) manager
+                .createQuery("select h from HistdataPriceDay h where h.exchangeId = :excId and  " +
+                        "h.currencyPairId = :cpId order by h.timestamp")
+                .setParameter("excId", exchangeId)
+                .setParameter("cpId", currencyPairId)
+                .getResultList();
+
+        manager.getTransaction().commit();
+        manager.close();
+        return histdataPriceDays;
     }
 }
