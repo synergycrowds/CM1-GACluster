@@ -116,4 +116,17 @@ public interface DBAMarketData {
      * @return list of histdata_price_day entries with the exchange id and currency pair id equal to the given ones, ordered by timestamp
      */
     List<HistdataPriceDay> getHistdataPriceDayForExchangeCurrencyPair(Integer exchangeId, Integer currencyPairId);
+
+    /**
+     * Return an exchange which has the given name
+     * @param name name of the exchange
+     * @return an exchnage with that name; null if no such exchange exists
+     */
+    Exchange getExchangeByName(String name);
+
+    /**
+     * Update histdata_price_day entries which already exist in the DB
+     * @param histdataPriceDayList list of entries to be updated
+     */
+    void updateHistDataPriceDayList(List<HistdataPriceDay> histdataPriceDayList);
 }

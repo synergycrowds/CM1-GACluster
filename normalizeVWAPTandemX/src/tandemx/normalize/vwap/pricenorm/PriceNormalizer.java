@@ -6,6 +6,9 @@
 package tandemx.normalize.vwap.pricenorm;
 
 import java.util.ArrayList;
+import java.util.List;
+
+import tandemx.model.HistdataPriceDay;
 import util.dataNormalizer.db.entity.ECPNormalizedPrice;
 
 /**
@@ -16,7 +19,7 @@ public class PriceNormalizer {
 
     private static boolean abnormal;
     private static double normalityThreshold;
-    
+
     static {
         /**
          * Flag to indicate the exceeding of the normality threshold. True when the data series has exceeded the threshold, false otherwise.
@@ -30,18 +33,22 @@ public class PriceNormalizer {
         normalityThreshold = 800;
     }
 
-    public static void normalize(ArrayList<ECPNormalizedPrice> lstPrices, int bottom) {
-        abnormal = false;
+    public static void normalize(List<HistdataPriceDay> lstPrices, double bottom, double minVolumeThreshold) {
+//        abnormal = false;
         
         if (lstPrices.size() >= 2) {
             lstPrices.get(0).setNormalizedPrice(bottom);
 
             for (int i = 1; i < lstPrices.size(); i++) {
-                double rentability = ((lstPrices.get(i).getPrice() - lstPrices.get(i - 1).getPrice()) / lstPrices.get(i - 1).getPrice());
-                double normalizedPrice = lstPrices.get(i - 1).getNormalizedPrice() * (1 + rentability);
-                lstPrices.get(i).setNormalizedPrice(normalizedPrice);
-                if(normalizedPrice > normalityThreshold){
-                    abnormal = true;
+                if (lstPrices.get(i - 1).getVolume() >= minVolumeThreshold) {
+                    double rentability = ((lstPrices.get(i).getPrice() - lstPrices.get(i - 1).getPrice()) / lstPrices.get(i - 1).getPrice());
+                    double normalizedPrice = lstPrices.get(i - 1).getNormalizedPrice() * (1 + rentability);
+                    lstPrices.get(i).setNormalizedPrice(normalizedPrice);
+//                if(normalizedPrice > normalityThreshold){
+//                    abnormal = true;
+//                }
+                } else {
+                    lstPrices.get(i).setNormalizedPrice(bottom);
                 }
             }
         }
@@ -50,4 +57,8 @@ public class PriceNormalizer {
     public static boolean isAbnormal(){
         return abnormal;
     }
+//
+//    public static void setNormalityThreshold(double newNormalityThreshold) {
+//        normalityThreshold = newNormalityThreshold;
+//    }
 }

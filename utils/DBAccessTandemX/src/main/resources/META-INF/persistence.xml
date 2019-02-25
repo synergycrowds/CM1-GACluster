@@ -32,6 +32,7 @@
 
         <class>tandemx.model.treeparams.TreeParams</class>
         <class>tandemx.model.treeparams.RDMParams</class>
+        <class>tandemx.model.treeparams.NormVWAPParams</class>
 
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
 

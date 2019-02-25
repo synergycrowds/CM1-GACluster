@@ -240,4 +240,36 @@ public class DBAMarketDataHib implements DBAMarketData {
         manager.close();
         return histdataPriceDays;
     }
+
+    @Override
+    public Exchange getExchangeByName(String name) {
+        final EntityManager manager = factory.createEntityManager();
+        manager.getTransaction().begin();
+
+        List<Exchange> exchanges = (List<Exchange>) manager
+                .createQuery("select ex from Exchange ex where ex.name = :exName")
+                .setMaxResults(1)
+                .setParameter("exName", name)
+                .getResultList();
+
+        Exchange result;
+        if (exchanges.size() <= 0) {
+            result = null;
+        } else {
+            result = exchanges.get(0);
+        }
+
+        manager.getTransaction().commit();
+        manager.close();
+        return result;
+    }
+
+    @Override
+    public void updateHistDataPriceDayList(List<HistdataPriceDay> histdataPriceDayList) {
+        final EntityManager manager = factory.createEntityManager();
+        manager.getTransaction().begin();
+        histdataPriceDayList.forEach(h -> manager.merge(h));
+        manager.getTransaction().commit();
+        manager.close();
+    }
 }
