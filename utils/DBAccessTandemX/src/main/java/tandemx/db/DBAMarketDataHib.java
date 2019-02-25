@@ -272,4 +272,22 @@ public class DBAMarketDataHib implements DBAMarketData {
         manager.getTransaction().commit();
         manager.close();
     }
+
+    @Override
+    public List<HistdataPriceDay> getHistdataPriceDaysTimeRangeCurrencyPair(LocalDate beginTimestamp, LocalDate endTimestamp, Integer currencyPairId) {
+        final EntityManager manager = factory.createEntityManager();
+        manager.getTransaction().begin();
+
+        List<HistdataPriceDay> histdataPriceDays = (List<HistdataPriceDay>) manager
+                .createQuery("select h from HistdataPriceDay h where h.currencyPairId = :cpId and h.timestamp " +
+                        "between :beginTmstp and :endTmstp order by h.timestamp")
+                .setParameter("cpId", currencyPairId)
+                .setParameter("beginTmstp", beginTimestamp)
+                .setParameter("endTmstp", endTimestamp)
+                .getResultList();
+
+        manager.getTransaction().commit();
+        manager.close();
+        return histdataPriceDays;
+    }
 }

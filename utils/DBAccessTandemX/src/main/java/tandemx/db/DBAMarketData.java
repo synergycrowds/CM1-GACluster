@@ -129,4 +129,15 @@ public interface DBAMarketData {
      * @param histdataPriceDayList list of entries to be updated
      */
     void updateHistDataPriceDayList(List<HistdataPriceDay> histdataPriceDayList);
+
+    /**
+     * Get histdata_price_day entries cor a currency pair which have the timestamp within a range. Entries are ordered
+     * by timestamp
+     * @param beginTimestamp beginning of the time range (included)
+     * @param endTimestamp ending of the time range (included)
+     * @param currencyPairId ID of the currencyPair
+     * @return histdata_price_day entries
+     */
+    List<HistdataPriceDay> getHistdataPriceDaysTimeRangeCurrencyPair(LocalDate beginTimestamp, LocalDate endTimestamp,
+                                                                     Integer currencyPairId);
 }
