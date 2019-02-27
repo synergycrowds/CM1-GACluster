@@ -6,6 +6,8 @@ import tandemx.model.CurrencyPair;
 import tandemx.model.Exchange;
 import tandemx.model.HistdataPriceDay;
 
+import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 
 public class NormalizationManager {
@@ -19,25 +21,36 @@ public class NormalizationManager {
 
     /**
      * Get all records from the DB which are not normalized and normalize them
+     * @return the timestamp of the oldest histdata_price_day entry that was normalized
      */
-    public void normalizeAllRecords() {
+    public LocalDateTime normalizeAllRecords() {
         List<CurrencyPair> currencyPairs = dbaMarketData.getCurrencyPairs();
         Exchange aggregateExchange = dbaMarketData.getExchangeByName(Constants.AGGREGATE_EXCHANGE_NAME);
         if (aggregateExchange == null) {
             // TODO: 2/18/2019 throw exception?
-            return;
+            return null;
         }
+        LocalDateTime lastDate = null;
         for (CurrencyPair currencyPair: currencyPairs) {
-            this.normalizeRecordsForCurrencyPair(currencyPair, aggregateExchange.getId());
+            LocalDateTime lastDateCP = this.normalizeRecordsForCurrencyPair(currencyPair, aggregateExchange.getId());
+            if (lastDateCP != null) {
+                if (lastDate == null) {
+                    lastDate = lastDateCP;
+                } else if (lastDateCP.isAfter(lastDate)) {
+                    lastDate = lastDateCP;
+                }
+            }
         }
+        return lastDate;
     }
 
     /**
      * Get all records from the DB for a exchange-currency-pair combination which are not normalized and normalize them
      * @param currencyPair currency pair to consider
      * @param exchangeId id of the exchange to consider
+     * @return the timestamp of the oldest histdata_price_day entry that was normalized
      */
-    private void normalizeRecordsForCurrencyPair(CurrencyPair currencyPair, Integer exchangeId) {
+    private LocalDateTime normalizeRecordsForCurrencyPair(CurrencyPair currencyPair, Integer exchangeId) {
         HistdataPriceDay lastNormalizedRecord = dbaMarketData.getLastNormalizedHistdataPriceDay(exchangeId, currencyPair.getId());
         List<HistdataPriceDay> histdataPriceDayRecords;
         double bottom;
@@ -52,5 +65,11 @@ public class NormalizationManager {
         }
         PriceNormalizer.normalize(histdataPriceDayRecords, bottom, minVolumeThreshold);
         dbaMarketData.updateHistDataPriceDayList(histdataPriceDayRecords);
+        HistdataPriceDay lastDayHistdata = histdataPriceDayRecords.stream()
+                .max(Comparator.comparing(HistdataPriceDay::getTimestamp)).get();
+        if (lastDayHistdata == null) {
+            return null;
+        }
+        return lastDayHistdata.getTimestamp().atStartOfDay();
     }
 }

@@ -3,6 +3,7 @@ package tandemx.db;
 import tandemx.model.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
@@ -140,4 +141,10 @@ public interface DBAMarketData {
      */
     List<HistdataPriceDay> getHistdataPriceDaysTimeRangeCurrencyPair(LocalDate beginTimestamp, LocalDate endTimestamp,
                                                                      Integer currencyPairId);
+
+    /**
+     * Update the normalized status flag with the new value for last date
+     * @param lastDate new value for last date
+     */
+    void updateNormalizedStatus(LocalDateTime lastDate);
 }

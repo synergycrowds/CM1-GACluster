@@ -24,19 +24,24 @@ public class Execution {
     @Column(name = "execution_timestamp_end")
     private LocalDateTime executionTimestampEnd;
 
+    @Column(name = "reference_symbol_id")
+    private Integer referenceSymbolId;
+
     public Execution() {
     }
 
-    public Execution(LocalDate dataTimestampBegin, LocalDate dataTimestampEnd, LocalDateTime executionTimestampBegin, LocalDateTime executionTimestampEnd) {
+    public Execution(LocalDate dataTimestampBegin, LocalDate dataTimestampEnd, LocalDateTime executionTimestampBegin, LocalDateTime executionTimestampEnd, Integer referenceSymbolId) {
         this.dataTimestampBegin = dataTimestampBegin;
         this.dataTimestampEnd = dataTimestampEnd;
         this.executionTimestampBegin = executionTimestampBegin;
         this.executionTimestampEnd = executionTimestampEnd;
+        this.referenceSymbolId = referenceSymbolId;
     }
 
-    public Execution(LocalDate dataTimestampBegin, LocalDate dataTimestampEnd) {
+    public Execution(LocalDate dataTimestampBegin, LocalDate dataTimestampEnd, Integer referenceSymbolId) {
         this.dataTimestampBegin = dataTimestampBegin;
         this.dataTimestampEnd = dataTimestampEnd;
+        this.referenceSymbolId = referenceSymbolId;
     }
 
     public Integer getId() {
@@ -77,5 +82,13 @@ public class Execution {
 
     public void setExecutionTimestampEnd(LocalDateTime executionTimestampEnd) {
         this.executionTimestampEnd = executionTimestampEnd;
+    }
+
+    public Integer getReferenceSymbolId() {
+        return referenceSymbolId;
+    }
+
+    public void setReferenceSymbolId(Integer referenceSymbolId) {
+        this.referenceSymbolId = referenceSymbolId;
     }
 }

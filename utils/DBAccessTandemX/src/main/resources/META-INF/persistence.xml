@@ -59,6 +59,7 @@
         <class>tandemx.model.CurrencyPair</class>
         <class>tandemx.model.ExchangeCurrencyPair</class>
         <class>tandemx.model.HistdataPriceDay</class>
+        <class>tandemx.model.NormalizedStatus</class>
 
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
 

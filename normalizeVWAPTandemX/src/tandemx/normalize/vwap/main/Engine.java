@@ -9,6 +9,8 @@ import tandemx.model.treeparams.NormVWAPParams;
 import tandemx.normalize.vwap.pricenorm.NormalizationManager;
 import tandemx.normalize.vwap.util.NormVWAPTreeParams;
 
+import java.time.LocalDateTime;
+
 public class Engine {
     public static void main(String[] args) {
         if (args.length <= 0) {
@@ -45,9 +47,12 @@ public class Engine {
         try {
             dbaMarketData = new DBAMarketDataHib(Constants.DB_NAME_BASE_MARKET_DATA_KAIKO);
             NormalizationManager normalizationManager = new NormalizationManager(dbaMarketData, minVolumeThreshold);
-            normalizationManager.normalizeAllRecords();
+            LocalDateTime lastDate = normalizationManager.normalizeAllRecords();
+            if (lastDate != null) {
+                dbaMarketData.updateNormalizedStatus(lastDate);
+            }
         } finally {
-            if (dbaMarketData == null) {
+            if (dbaMarketData != null) {
                 dbaMarketData.close();
             }
         }

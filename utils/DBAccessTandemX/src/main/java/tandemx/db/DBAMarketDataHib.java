@@ -7,6 +7,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
@@ -289,5 +290,28 @@ public class DBAMarketDataHib implements DBAMarketData {
         manager.getTransaction().commit();
         manager.close();
         return histdataPriceDays;
+    }
+
+    @Override
+    public void updateNormalizedStatus(LocalDateTime lastDate) {
+        final EntityManager manager = factory.createEntityManager();
+        manager.getTransaction().begin();
+
+        List<NormalizedStatus> statuses = (List<NormalizedStatus>) manager
+                .createQuery("select ns from NormalizedStatus ns")
+                .setMaxResults(1)
+                .getResultList();
+
+        NormalizedStatus normalizedStatus;
+        if (statuses.size() <= 0) {
+            normalizedStatus = new NormalizedStatus(lastDate);
+            manager.persist(normalizedStatus);
+        } else {
+            normalizedStatus = statuses.get(0);
+            normalizedStatus.setLastDate(lastDate);
+        }
+
+        manager.getTransaction().commit();
+        manager.close();
     }
 }

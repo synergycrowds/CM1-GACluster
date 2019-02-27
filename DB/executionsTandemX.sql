@@ -3,7 +3,8 @@ create table execution(
 	data_timestamp_begin timestamp without time zone,
 	data_timestamp_end timestamp without time zone,
 	execution_timestamp_begin timestamp without time zone,
-	execution_timestamp_end timestamp without time zone
+	execution_timestamp_end timestamp without time zone,
+	reference_symbol_id integer
 );
 
 create table execution_currency_pair(
