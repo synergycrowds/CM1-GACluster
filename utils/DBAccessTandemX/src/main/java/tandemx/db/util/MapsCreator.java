@@ -73,7 +73,7 @@ public class MapsCreator {
 
     /**
      * Create a mapping between currency pairs ids and instances of the class (map[id] = instance)
-     * @param currencyPairs
+     * @param currencyPairs list of currency pairs
      * @return the mapping
      */
     public static Map<Integer, CurrencyPair> createCurrencyPairIdToInstance(List<CurrencyPair> currencyPairs) {
@@ -82,6 +82,49 @@ public class MapsCreator {
             id2instance.put(currencyPair.getId(), currencyPair);
         }
         return id2instance;
+    }
+
+    /**
+     * Create a mapping between symbols ids and instances of the class (map[id] = instance)
+     * @param symbols list of symbols
+     * @return the symbols IDs to instnaces mapping
+     */
+    public static Map<Integer, Symbol> createSymbolIdToInstance(List<Symbol> symbols) {
+        Map<Integer, Symbol> id2instance = new HashMap<>();
+        for (Symbol symbol: symbols) {
+            id2instance.put(symbol.getId(), symbol);
+        }
+        return id2instance;
+    }
+
+    /**
+     * Create a mapping between the IDs of the currency pair and the reference symbol (right symbol) of that pair
+     * @param currencyPairs list of currency pairs
+     * @param symbolsIdToInstance mapping between symbols IDs and instances
+     * @return the currency pair ID to reference symbol mapping
+     */
+    public static Map<Integer, Symbol> createCurrencyPairIdToReferenceSymbol(List<CurrencyPair> currencyPairs,
+                                                                                Map<Integer, Symbol> symbolsIdToInstance) {
+        Map<Integer, Symbol> cpId2sId = new HashMap<>();
+        for (CurrencyPair currencyPair: currencyPairs) {
+            cpId2sId.put(currencyPair.getId(), symbolsIdToInstance.get(currencyPair.getRightSymbolId()));
+        }
+        return cpId2sId;
+    }
+
+    /**
+     * Create a mapping between the IDs of the currency pair and the symbol (left symbol) of that pair
+     * @param currencyPairs list of currency pairs
+     * @param symbolsIdToInstance mapping between symbols IDs and instances
+     * @return the currency pair ID to symbol mapping
+     */
+    public static Map<Integer, Symbol> createCurrencyPairIdToSymbol(List<CurrencyPair> currencyPairs,
+                                                                             Map<Integer, Symbol> symbolsIdToInstance) {
+        Map<Integer, Symbol> cpId2sId = new HashMap<>();
+        for (CurrencyPair currencyPair: currencyPairs) {
+            cpId2sId.put(currencyPair.getId(), symbolsIdToInstance.get(currencyPair.getLeftSymbolId()));
+        }
+        return cpId2sId;
     }
 
 }
