@@ -1,5 +1,6 @@
 package tandemx.db;
 
+import tandemx.model.Execution;
 import tandemx.model.ExecutionDescription;
 
 import java.time.LocalDateTime;
@@ -25,4 +26,16 @@ public interface DBAExecutions {
      */
     void updateExecutionCompletionTimestamps(Integer executionId, LocalDateTime executionTimestampBegin,
                                              LocalDateTime executionTimestampEnd);
+
+    /**
+     * Get the lates execution with respect to the data end timestamp;
+     * @return the latest execution
+     */
+    Execution getLatestExecution();
+
+    /**
+     * Insert into the DB an execution description
+     * @return the execution description with the generated ID
+     */
+    ExecutionDescription insertExecutionDescription(ExecutionDescription executionDescription);
 }

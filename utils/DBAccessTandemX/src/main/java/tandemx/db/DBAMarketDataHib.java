@@ -314,4 +314,71 @@ public class DBAMarketDataHib implements DBAMarketData {
         manager.getTransaction().commit();
         manager.close();
     }
+
+    @Override
+    public NormalizedStatus getNormalizedStatus() {
+        final EntityManager manager = factory.createEntityManager();
+        manager.getTransaction().begin();
+
+        List<NormalizedStatus> statuses = (List<NormalizedStatus>) manager
+                .createQuery("select ns from NormalizedStatus ns")
+                .setMaxResults(1)
+                .getResultList();
+
+        NormalizedStatus result;
+        if (statuses.size() > 0) {
+            result = statuses.get(0);
+        } else {
+            result = null;
+        }
+
+        manager.getTransaction().commit();
+        manager.close();
+        return result;
+    }
+
+    @Override
+    public HistdataPriceDay getEarliestHistdataPriceDay() {
+        final EntityManager manager = factory.createEntityManager();
+        manager.getTransaction().begin();
+
+        List<HistdataPriceDay> histdataPriceDays = (List<HistdataPriceDay>) manager
+                .createQuery("select h from HistdataPriceDay h order by h.timestamp")
+                .setMaxResults(1)
+                .getResultList();
+
+        HistdataPriceDay result;
+        if (histdataPriceDays.size() <= 0) {
+            result = null;
+        } else {
+            result = histdataPriceDays.get(0);
+        }
+
+        manager.getTransaction().commit();
+        manager.close();
+        return result;
+    }
+
+    @Override
+    public long getNumberOfHistdataPriceDaysWithVolumeAboveThreshold(Integer currencyPairId, double volumeThreshold,
+                                                                        LocalDate timestampBegin,
+                                                                        LocalDate timestampEnd) {
+        final EntityManager manager = factory.createEntityManager();
+        manager.getTransaction().begin();
+
+        long result = ((List<Long>) manager
+                .createQuery("select count(h) from HistdataPriceDay h where h.currencyPairId = :cpId and " +
+                        "h.timestamp between :tmstpBegin and :tmstpEnd and h.volume > :vol")
+                .setParameter("cpId", currencyPairId)
+                .setParameter("vol", volumeThreshold)
+                .setParameter("tmstpBegin", timestampBegin)
+                .setParameter("tmstpEnd", timestampEnd)
+                .setMaxResults(1)
+                .getResultList())
+                .get(0);
+
+        manager.getTransaction().commit();
+        manager.close();
+        return result;
+    }
 }

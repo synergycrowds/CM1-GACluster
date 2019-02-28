@@ -1,6 +1,7 @@
 package tandemx.db;
 
 
+import tandemx.model.treeparams.EMParams;
 import tandemx.model.treeparams.NormVWAPParams;
 import tandemx.model.treeparams.RDMParams;
 import tandemx.model.treeparams.TreeParams;
@@ -32,4 +33,11 @@ public interface DBATreeParams {
      * @return the NormVWAPParams with the given id or null if no such RDMParams exists
      */
     NormVWAPParams getNormVWAPParamsById(Integer treeId);
+
+    /**
+     * Returns the EMParams with the given id; if no EMParams with this id is found, returns null.
+     * @param treeId the tree id
+     * @return the EMParams with the given id or null if no such EMParams exists
+     */
+    EMParams getEMParamsById(Integer treeId);
 }

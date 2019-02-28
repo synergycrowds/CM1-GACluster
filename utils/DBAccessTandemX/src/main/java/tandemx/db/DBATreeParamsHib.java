@@ -1,5 +1,6 @@
 package tandemx.db;
 
+import tandemx.model.treeparams.EMParams;
 import tandemx.model.treeparams.NormVWAPParams;
 import tandemx.model.treeparams.RDMParams;
 import tandemx.model.treeparams.TreeParams;
@@ -44,5 +45,13 @@ public class DBATreeParamsHib implements DBATreeParams{
         NormVWAPParams normVWAPParams = manager.find(NormVWAPParams.class, treeId);
         manager.close();
         return normVWAPParams;
+    }
+
+    @Override
+    public EMParams getEMParamsById(Integer treeId) {
+        EntityManager manager = factory.createEntityManager();
+        EMParams emParams = manager.find(EMParams.class, treeId);
+        manager.close();
+        return emParams;
     }
 }

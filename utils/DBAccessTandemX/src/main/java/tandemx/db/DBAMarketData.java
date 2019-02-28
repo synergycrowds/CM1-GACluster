@@ -147,4 +147,28 @@ public interface DBAMarketData {
      * @param lastDate new value for last date
      */
     void updateNormalizedStatus(LocalDateTime lastDate);
+
+    /**
+     * Get the normalized status flag
+     * @return the flag if if exists, null otherwise
+     */
+    NormalizedStatus getNormalizedStatus();
+
+    /**
+     * Get the histdata_price_day entry with the earliest timestamp
+     * @return the earliest entry; null if no such entry exists
+     */
+    HistdataPriceDay getEarliestHistdataPriceDay();
+
+    /**
+     * Get the number of histdata_price_day entries which have the volume above a threshold. Only entries of a currency
+     * pair within a time range are considered.
+     * @param currencyPairId IDof the currency pair considered
+     * @param volumeThreshold threshold for volume (excluded)
+     * @param timestampBegin earliest timestamp considered (included)
+     * @param timestampEnd latest timestamp considered (included)
+     * @return number of entries which satisfy the requirements
+     */
+    long getNumberOfHistdataPriceDaysWithVolumeAboveThreshold(Integer currencyPairId, double volumeThreshold,
+                                                              LocalDate timestampBegin, LocalDate timestampEnd);
 }

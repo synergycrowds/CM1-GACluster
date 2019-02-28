@@ -18,6 +18,13 @@ public class ExecutionDescription {
         this.currencyPairIds = currencyPairIds;
     }
 
+    public ExecutionDescription(LocalDate dataTimestampBegin, LocalDate dataTimestampEnd, Integer referenceSymbolId, List<Integer> currencyPairIds) {
+        this.dataTimestampBegin = dataTimestampBegin;
+        this.dataTimestampEnd = dataTimestampEnd;
+        this.referenceSymbolId = referenceSymbolId;
+        this.currencyPairIds = currencyPairIds;
+    }
+
     public ExecutionDescription(Integer executionId, LocalDate dataTimestampBegin, LocalDate dataTimestampEnd, Integer referenceSymbolId, List<Integer> currencyPairIds) {
         this.executionId = executionId;
         this.dataTimestampBegin = dataTimestampBegin;
@@ -64,11 +71,33 @@ public class ExecutionDescription {
         return executionId;
     }
 
+    public void setExecutionId(Integer executionId) {
+        this.executionId = executionId;
+    }
+
     public Integer getReferenceSymbolId() {
         return referenceSymbolId;
     }
 
     public void setReferenceSymbolId(Integer referenceSymbolId) {
         this.referenceSymbolId = referenceSymbolId;
+    }
+
+    /**
+     * Get the corresponding execution
+     * @return the execution
+     */
+    public Execution getExecution() {
+        return new Execution(dataTimestampBegin, dataTimestampEnd, referenceSymbolId);
+    }
+
+    /**
+     * Get the corresponding ExecutionCurrencyPair instances. Observation: the executionId should be set, otherwise the
+     * ExecutionCurrencyPair instances will have a null executionId.
+     * @return the ExecutionCurrencyPairs
+     */
+    public List<ExecutionCurrencyPair> getExecutionCurrencyPairs() {
+        return this.currencyPairIds.stream()
+                .map(cpId -> new ExecutionCurrencyPair(executionId, cpId)).collect(Collectors.toList());
     }
 }

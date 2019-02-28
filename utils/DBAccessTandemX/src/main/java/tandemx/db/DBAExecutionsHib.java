@@ -59,4 +59,39 @@ public class DBAExecutionsHib implements DBAExecutions {
         manager.getTransaction().commit();
         manager.close();
     }
+
+    @Override
+    public Execution getLatestExecution() {
+        final EntityManager manager = factory.createEntityManager();
+        manager.getTransaction().begin();
+
+        List<Execution> executions = (List<Execution>) manager
+                .createQuery("select e from Execution e order by e.dataTimestampEnd desc")
+                .setMaxResults(1)
+                .getResultList();
+
+        Execution result;
+        if (executions.size() <= 0) {
+            result = null;
+        } else {
+            result = executions.get(0);
+        }
+
+        manager.getTransaction().commit();
+        manager.close();
+        return result;
+    }
+
+    @Override
+    public ExecutionDescription insertExecutionDescription(ExecutionDescription executionDescription) {
+        final EntityManager manager = factory.createEntityManager();
+        manager.getTransaction().begin();
+        Execution execution = executionDescription.getExecution();
+        manager.persist(execution);
+        executionDescription.setExecutionId(execution.getId());
+        executionDescription.getExecutionCurrencyPairs().forEach(ecp -> manager.persist(ecp));
+        manager.getTransaction().commit();
+        manager.close();
+        return executionDescription;
+    }
 }
