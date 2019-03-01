@@ -7,7 +7,9 @@ import tandemx.model.ExecutionDescription;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 public class DBAExecutionsHib implements DBAExecutions {
@@ -93,5 +95,40 @@ public class DBAExecutionsHib implements DBAExecutions {
         manager.getTransaction().commit();
         manager.close();
         return executionDescription;
+    }
+
+    @Override
+    public List<ExecutionDescription> getExecutionDescriptionsByDataTimestampEnd(LocalDate dataTimestampEnd) {
+        final EntityManager manager = factory.createEntityManager();
+        manager.getTransaction().begin();
+
+        List<Execution> executions = (List<Execution>) manager
+                .createQuery("select e from Execution e where e.dataTimestampEnd = :tmstpEnd")
+                .setParameter("tmstpEnd", dataTimestampEnd)
+                .getResultList();
+
+        List<ExecutionDescription> executionDescriptions = new ArrayList<>();
+
+        for (Execution execution: executions) {
+            List<ExecutionCurrencyPair> executionCurrencyPairs = (List<ExecutionCurrencyPair>) manager
+                    .createQuery("select ecp from ExecutionCurrencyPair ecp where ecp.executionId = :exeId")
+                    .setParameter("exeId", execution.getId())
+                    .getResultList();
+            executionDescriptions.add(new ExecutionDescription(execution, executionCurrencyPairs));
+        }
+
+        manager.getTransaction().commit();
+        manager.close();
+        return executionDescriptions;
+    }
+
+    @Override
+    public List<ExecutionCurrencyPair> insertExecutionCurrencyPairs(List<ExecutionCurrencyPair> executionCurrencyPairs) {
+        final EntityManager manager = factory.createEntityManager();
+        manager.getTransaction().begin();
+        executionCurrencyPairs.forEach(ecp -> manager.persist(ecp));
+        manager.getTransaction().commit();
+        manager.close();
+        return executionCurrencyPairs;
     }
 }

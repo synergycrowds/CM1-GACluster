@@ -4,11 +4,13 @@ public class EMTreeParams {
     private Long waitBtwSessions;
     private Integer numberOfObservations;
     private Integer stepSize;
+    private Integer minNumberOfSymbols;
 
-    public EMTreeParams(Long waitBtwSessions, Integer numberOfObservations, Integer stepSize) {
+    public EMTreeParams(Long waitBtwSessions, Integer numberOfObservations, Integer stepSize, Integer minNumberOfSymbols) {
         this.waitBtwSessions = waitBtwSessions;
         this.numberOfObservations = numberOfObservations;
         this.stepSize = stepSize;
+        this.minNumberOfSymbols = minNumberOfSymbols;
     }
 
     public Long getWaitBtwSessions() {
@@ -33,5 +35,13 @@ public class EMTreeParams {
 
     public void setStepSize(Integer stepSize) {
         this.stepSize = stepSize;
+    }
+
+    public Integer getMinNumberOfSymbols() {
+        return minNumberOfSymbols;
+    }
+
+    public void setMinNumberOfSymbols(Integer minNumberOfSymbols) {
+        this.minNumberOfSymbols = minNumberOfSymbols;
     }
 }

@@ -26,7 +26,8 @@ public class Engine {
     private void run(EMTreeParams params) {
         long millisecondsToWaitBetweenSession = params.getWaitBtwSessions();
         while (true) {
-            runExecutionsCreationSession(params.getNumberOfObservations(), params.getStepSize());
+            runExecutionsCreationSession(params.getNumberOfObservations(), params.getStepSize(),
+                    params.getMinNumberOfSymbols());
             try {
                 Thread.sleep(millisecondsToWaitBetweenSession);
             } catch (InterruptedException e) {
@@ -35,14 +36,14 @@ public class Engine {
         }
     }
 
-    private void runExecutionsCreationSession(int numberOfObservations, int stepSize) {
+    private void runExecutionsCreationSession(int numberOfObservations, int stepSize, int minNumberOfSymbols) {
         DBAMarketData dbaMarketData = null;
         DBAExecutions dbaExecutions = null;
         try {
             dbaMarketData = new DBAMarketDataHib(Constants.DB_NAME_BASE_MARKET_DATA_KAIKO);
             dbaExecutions = new DBAExecutionsHib(Constants.DB_NAME_BASE_EXECUTIONS);
             ExecutionCreator executionCreator = new ExecutionCreator(dbaMarketData, dbaExecutions, numberOfObservations,
-                    stepSize);
+                    stepSize, minNumberOfSymbols);
             executionCreator.createExecutionsWhilePossible();
         } finally {
             if (dbaExecutions != null) {
@@ -65,7 +66,7 @@ public class Engine {
             }
 
             return new EMTreeParams(emParams.getWaitBtwSessions(), emParams.getNumberOfObservations(),
-                    emParams.getStepSize());
+                    emParams.getStepSize(), emParams.getMinNumberOfSymbols());
         } finally {
             if (dbaTreeParams != null) {
                 dbaTreeParams.close();

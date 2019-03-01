@@ -21,6 +21,9 @@ public class EMParams {
     @Column(name = "step_size")
     private Integer stepSize;
 
+    @Column(name = "min_number_of_symbols")
+    private Integer minNumberOfSymbols;
+
     public EMParams() {
     }
 
@@ -54,5 +57,13 @@ public class EMParams {
 
     public void setStepSize(Integer stepSize) {
         this.stepSize = stepSize;
+    }
+
+    public Integer getMinNumberOfSymbols() {
+        return minNumberOfSymbols;
+    }
+
+    public void setMinNumberOfSymbols(Integer minNumberOfSymbols) {
+        this.minNumberOfSymbols = minNumberOfSymbols;
     }
 }

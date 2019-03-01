@@ -6,20 +6,27 @@ import tandemx.model.*;
 
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class ExecutionCreator {
     private DBAMarketData dbaMarketData;
     private DBAExecutions dbaExecutions;
     private int numberOfObservations;
     private int stepSize;
+    private int minNumberOfSymbols;
 
-    public ExecutionCreator(DBAMarketData dbaMarketData, DBAExecutions dbaExecutions, int numberOfObservations, int stepSize) {
+    public ExecutionCreator(DBAMarketData dbaMarketData, DBAExecutions dbaExecutions, int numberOfObservations,
+                            int stepSize, int minNumberOfSymbols) {
         this.dbaMarketData = dbaMarketData;
         this.dbaExecutions = dbaExecutions;
         this.numberOfObservations = numberOfObservations;
         this.stepSize = stepSize;
+        this.minNumberOfSymbols = minNumberOfSymbols;
     }
 
+    /**
+     * Create executions while data is available
+     */
     public void createExecutionsWhilePossible() {
         NormalizedStatus normalizedStatus = dbaMarketData.getNormalizedStatus();
         if (normalizedStatus == null || normalizedStatus.getLastDate() == null) {
@@ -43,19 +50,34 @@ public class ExecutionCreator {
         }
         List<CurrencyPair> currencyPairs = dbaMarketData.getCurrencyPairs();
         Map<Integer, List<CurrencyPair>> refSymb2CP = getReferenceSymbolIdToCurrencyPairs(currencyPairs);
+        if (latestExecution != null) {
+            checkLastExecutionDate(latestExecution.getDataTimestampEnd(), refSymb2CP);
+        }
         LocalDate newDataTimestampBegin;
         // TODO: 2/28/2019 check if it would be more efficient to create executions by ref symbol, rather than day (might check less intervals for zero volumes)
         while(!newDataTimestampEnd.isAfter(lastNormalizedDate)) {
             newDataTimestampBegin = newDataTimestampEnd.minusDays(numberOfObservations - 1);
             for (Integer refSymbolId: refSymb2CP.keySet()) {
-                createExecutionIfPossible(refSymbolId, refSymb2CP.get(refSymbolId), newDataTimestampBegin,
+                ExecutionDescription executionDescription =
+                        createExecutionIfPossible(refSymbolId, refSymb2CP.get(refSymbolId), newDataTimestampBegin,
                         newDataTimestampEnd);
+                if (executionDescription != null) {
+                    dbaExecutions.insertExecutionDescription(executionDescription);
+                }
             }
             newDataTimestampEnd = newDataTimestampEnd.plusDays(stepSize);
         }
     }
 
-    private void createExecutionIfPossible(Integer refSymbolId, List<CurrencyPair> currencyPairs,
+    /**
+     * Create executions for a reference symbol while data is available
+     * @param refSymbolId ID of the reference symbol
+     * @param currencyPairs list of currency pairs for the reference symbol (currency pairs that have the given reference symbol)
+     * @param dataTimestampBegin beginning of the period of time considered for the execution
+     * @param dataTimestampEnd ending of the period of time considered for the execution
+     * @return execution description if data is available; null otherwise
+     */
+    private ExecutionDescription createExecutionIfPossible(Integer refSymbolId, List<CurrencyPair> currencyPairs,
                                            LocalDate dataTimestampBegin, LocalDate dataTimestampEnd) {
         List<Integer> executionCurrencyPairIds = new ArrayList<>();
         for (CurrencyPair currencyPair: currencyPairs) {
@@ -66,10 +88,46 @@ public class ExecutionCreator {
                 executionCurrencyPairIds.add(currencyPair.getId());
             }
         }
-        if (executionCurrencyPairIds.size() > 0) {
+        if (executionCurrencyPairIds.size() >= minNumberOfSymbols) {
+            return new ExecutionDescription(dataTimestampBegin, dataTimestampEnd, refSymbolId, executionCurrencyPairIds);
+        }
+        return null;
+    }
+
+    /**
+     * Check if new executions can be made for the last period of time considered
+     * @param dataTimestampEnd ending of the last period of time considered for the execution
+     * @param refSymb2CP mapping between reference symbol IDs and corresponding currency pairs
+     */
+    private void checkLastExecutionDate(LocalDate dataTimestampEnd, Map<Integer, List<CurrencyPair>> refSymb2CP) {
+        LocalDate dataTimestampBegin = dataTimestampEnd.minusDays(numberOfObservations - 1);
+        List<ExecutionDescription> executionDescriptions =
+                dbaExecutions.getExecutionDescriptionsByDataTimestampEnd(dataTimestampEnd);
+        Map<Integer, ExecutionDescription> refSymId2ExeDesc = executionDescriptions.stream()
+                .collect(Collectors.toMap(ExecutionDescription::getReferenceSymbolId, ed -> ed));
+        for (Integer refSymbolId: refSymb2CP.keySet()) {
             ExecutionDescription executionDescription =
-                    new ExecutionDescription(dataTimestampBegin, dataTimestampEnd, refSymbolId, executionCurrencyPairIds);
-            dbaExecutions.insertExecutionDescription(executionDescription);
+                    createExecutionIfPossible(refSymbolId, refSymb2CP.get(refSymbolId), dataTimestampBegin,
+                            dataTimestampEnd);
+            if (executionDescription != null) {
+                if (!refSymId2ExeDesc.containsKey(executionDescription.getReferenceSymbolId())) {
+                    dbaExecutions.insertExecutionDescription(executionDescription);
+                } else {
+                    Set<Integer> newCurrencyPairIds =
+                            new HashSet<>(executionDescription.getCurrencyPairIds());
+                    newCurrencyPairIds.removeAll(
+                            refSymId2ExeDesc.get(executionDescription.getReferenceSymbolId()).getCurrencyPairIds());
+                    if (newCurrencyPairIds.size() > 0) {
+                        dbaExecutions.insertExecutionCurrencyPairs(
+                                newCurrencyPairIds.stream()
+                                        .map(cpId -> new ExecutionCurrencyPair(
+                                                refSymId2ExeDesc.get(
+                                                        executionDescription.getReferenceSymbolId()).getExecutionId(),
+                                                cpId))
+                                        .collect(Collectors.toList()));
+                    }
+                }
+            }
         }
     }
 
@@ -90,6 +148,11 @@ public class ExecutionCreator {
         return refSymb2Symb;
     }
 
+    /**
+     * Get a mapping between reference symbol IDs and the corresponding list of currency pairs
+     * @param currencyPairs list of currency pairs
+     * @return mapping between reference symbol IDs and currency pairs
+     */
     private Map<Integer, List<CurrencyPair>> getReferenceSymbolIdToCurrencyPairs(List<CurrencyPair> currencyPairs) {
         Map<Integer, List<CurrencyPair>> refSymb2CP = new HashMap<>();
         for (CurrencyPair cp: currencyPairs) {

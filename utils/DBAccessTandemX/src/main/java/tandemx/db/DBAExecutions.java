@@ -1,9 +1,12 @@
 package tandemx.db;
 
 import tandemx.model.Execution;
+import tandemx.model.ExecutionCurrencyPair;
 import tandemx.model.ExecutionDescription;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 public interface DBAExecutions {
     /**
@@ -38,4 +41,18 @@ public interface DBAExecutions {
      * @return the execution description with the generated ID
      */
     ExecutionDescription insertExecutionDescription(ExecutionDescription executionDescription);
+
+    /**
+     * Get all execution descriptions that have a certain data timestamp end
+     * @param dataTimestampEnd value for the data timestamp end of all returned execution descriptions
+     * @return list of all execution descriptions satisfying the condition
+     */
+    List<ExecutionDescription> getExecutionDescriptionsByDataTimestampEnd(LocalDate dataTimestampEnd);
+
+    /**
+     * Insert into the DB exchangeCurrencyPairs
+     * @param executionCurrencyPairs list of entries to be persisted
+     * @return list of the same entries, but with the assigned ID
+     */
+    List<ExecutionCurrencyPair> insertExecutionCurrencyPairs(List<ExecutionCurrencyPair> executionCurrencyPairs);
 }
