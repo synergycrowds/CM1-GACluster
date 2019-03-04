@@ -10,6 +10,9 @@ import java.time.LocalDateTime;
 @Table(name = "NORMALIZED_STATUS")
 public class NormalizedStatus {
     @Id
+    @Column(name = "id")
+    private Integer id;
+
     @Column(name = "last_date")
     private LocalDateTime lastDate;
 
