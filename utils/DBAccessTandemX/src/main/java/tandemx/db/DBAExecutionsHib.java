@@ -131,4 +131,32 @@ public class DBAExecutionsHib implements DBAExecutions {
         manager.close();
         return executionCurrencyPairs;
     }
+
+    @Override
+    public ExecutionDescription getExecutionDescriptionById(int executionId) {
+        final EntityManager manager = factory.createEntityManager();
+        manager.getTransaction().begin();
+
+        List<Execution> executions = (List<Execution>) manager
+                .createQuery("select e from Execution e where e.id = :eId")
+                .setParameter("eId", executionId)
+                .setMaxResults(1)
+                .getResultList();
+
+        Execution execution;
+        if (executions.size() <= 0) {
+            return null;
+        } else {
+            execution = executions.get(0);
+        }
+
+        List<ExecutionCurrencyPair> executionCurrencyPairs = (List<ExecutionCurrencyPair>) manager
+                .createQuery("select ecp from ExecutionCurrencyPair ecp where ecp.executionId = :exeId")
+                .setParameter("exeId", execution.getId())
+                .getResultList();
+
+        manager.getTransaction().commit();
+        manager.close();
+        return new ExecutionDescription(execution, executionCurrencyPairs);
+    }
 }

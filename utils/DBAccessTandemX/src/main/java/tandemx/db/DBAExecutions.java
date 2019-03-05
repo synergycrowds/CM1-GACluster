@@ -55,4 +55,11 @@ public interface DBAExecutions {
      * @return list of the same entries, but with the assigned ID
      */
     List<ExecutionCurrencyPair> insertExecutionCurrencyPairs(List<ExecutionCurrencyPair> executionCurrencyPairs);
+
+    /**
+     * Get the execution description with the given execution ID
+     * @param executionId the ID of the returned execution description
+     * @return the execution description if it exists, null otherwise
+     */
+    ExecutionDescription getExecutionDescriptionById(int executionId);
 }
