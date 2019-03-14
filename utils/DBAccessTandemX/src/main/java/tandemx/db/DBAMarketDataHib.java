@@ -381,4 +381,19 @@ public class DBAMarketDataHib implements DBAMarketData {
         manager.close();
         return result;
     }
+
+    @Override
+    public void updateSymbols(List<Symbol> symbols) {
+        final EntityManager manager = factory.createEntityManager();
+        manager.getTransaction().begin();
+        for (Symbol symbol: symbols) {
+            Symbol dbSymbol = manager.find(Symbol.class, symbol.getId());
+            dbSymbol.setCurrencyTypeId(symbol.getCurrencyTypeId());
+            dbSymbol.setName(symbol.getName());
+            dbSymbol.setLogo(symbol.getLogo());
+            dbSymbol.setProjectName(symbol.getProjectName());
+        }
+        manager.getTransaction().commit();
+        manager.close();
+    }
 }

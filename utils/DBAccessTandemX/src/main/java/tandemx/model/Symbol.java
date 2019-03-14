@@ -16,15 +16,19 @@ public class Symbol {
     @Column(name = "currency_type")
     private Integer currencyTypeId;
 
+    @Column(name = "project_name")
+    private String projectName;
+
     @Column(name = "logo")
     private String logo;
 
     public Symbol() {
     }
 
-    public Symbol(String name, Integer currencyTypeId, String logo) {
+    public Symbol(String name, Integer currencyTypeId, String projectName, String logo) {
         this.name = name;
         this.currencyTypeId = currencyTypeId;
+        this.projectName = projectName;
         this.logo = logo;
     }
 
@@ -58,5 +62,13 @@ public class Symbol {
 
     public void setLogo(String logo) {
         this.logo = logo;
+    }
+
+    public String getProjectName() {
+        return projectName;
+    }
+
+    public void setProjectName(String projectName) {
+        this.projectName = projectName;
     }
 }

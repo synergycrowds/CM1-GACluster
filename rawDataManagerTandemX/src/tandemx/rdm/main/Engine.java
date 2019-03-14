@@ -37,6 +37,7 @@ public class Engine {
 
     private void run(RDMTreeParams params) {
         long millisecondsToWait = params.getWaitBtwSessions();
+        runUpdateSymbols(Constants.DB_NAME_BASE_MARKET_DATA_KAIKO);
         while (true) {
             System.out.println("Session started");
             runMarketDataObtainingSession(Constants.DB_NAME_BASE_MARKET_DATA_KAIKO);
@@ -79,6 +80,22 @@ public class Engine {
         } finally {
             if (dbaTreeParams != null) {
                 dbaTreeParams.close();
+            }
+        }
+    }
+
+    private void runUpdateSymbols(String dbName) {
+        DBAMarketData dbaMarketData = null;
+        try {
+            dbaMarketData = new DBAMarketDataHib(dbName);
+            KaikoHelper kaiko = new KaikoHelper(KaikoCredentials.API_KEY);
+            MarketDataObtainer marketDataObtainer = new MarketDataObtainer(dbaMarketData, kaiko);
+            marketDataObtainer.updateSymbols();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (dbaMarketData != null) {
+                dbaMarketData.close();
             }
         }
     }

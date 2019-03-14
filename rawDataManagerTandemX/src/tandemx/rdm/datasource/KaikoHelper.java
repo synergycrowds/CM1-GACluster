@@ -125,7 +125,8 @@ public class KaikoHelper {
             for (int i = 0; i < assetsJsonArray.size(); i++) {
                 JsonObject assetJsonObj = assetsJsonArray.getJsonObject(i);
                 symbols.add(new Symbol(assetJsonObj.getString("code"),
-                        currencyTypes.get(ctKaikoToTX.get(assetJsonObj.getString("asset_class"))), null));
+                        currencyTypes.get(ctKaikoToTX.get(assetJsonObj.getString("asset_class"))),
+                        assetJsonObj.getString("name"), null));
             }
             return symbols;
 

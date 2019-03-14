@@ -246,4 +246,20 @@ public class MarketDataObtainer {
         currencyPairs.add(new CurrencyPair(symbolsNameToIdMap.get(p.getFirst()), symbolsNameToIdMap.get(p.getSecond())));
         return currencyPairs;
     }
+
+    public void updateSymbols() throws Exception {
+        Map<String, Integer> currencyTypesMap = MapsCreator.createCurrencyTypeNameToId(dbaMarketData.getCurrencyTypes());
+        List<Symbol> symbols = kaiko.getAssets(currencyTypesMap);
+        List<Symbol> dbSymbols = dbaMarketData.getSymbols();
+        Map<String, Integer> symbolsName2Id = MapsCreator.createSymbolNameToId(dbSymbols);
+        Map<Integer, Symbol> symbolsId2Instance = MapsCreator.createSymbolIdToInstance(dbSymbols);
+        for (Symbol symbol: symbols) {
+            Symbol dbSymbol = symbolsId2Instance.get(symbolsName2Id.get(symbol.getName()));
+            dbSymbol.setCurrencyTypeId(symbol.getCurrencyTypeId());
+            dbSymbol.setName(symbol.getName());
+            dbSymbol.setLogo(symbol.getLogo());
+            dbSymbol.setProjectName(symbol.getProjectName());
+        }
+        dbaMarketData.updateSymbols(dbSymbols);
+    }
 }

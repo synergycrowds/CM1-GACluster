@@ -171,4 +171,10 @@ public interface DBAMarketData {
      */
     long getNumberOfHistdataPriceDaysWithVolumeAboveThreshold(Integer currencyPairId, double volumeThreshold,
                                                               LocalDate timestampBegin, LocalDate timestampEnd);
+
+    /**
+     * Update symbols in the DB
+     * @param symbols list of updated symbols
+     */
+    void updateSymbols(List<Symbol> symbols);
 }
