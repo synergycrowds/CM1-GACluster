@@ -3,19 +3,23 @@ package tandemx.exemanager.main;
 import tandemx.db.*;
 import tandemx.db.util.Constants;
 import tandemx.exemanager.create.ExecutionCreator;
+import tandemx.exemanager.launch.ExecutionLauncher;
+import tandemx.exemanager.launch.JARProcessExeLauncher;
 import tandemx.exemanager.util.EMTreeParams;
 import tandemx.model.treeparams.EMParams;
 
 public class Engine {
     public static void main(String[] args) {
-        if (args.length <= 0) {
-            System.out.println("Tree ID required");
+        if (args.length <= 1) {
+            System.out.println("Tree ID and jar path are required");
             return;
         }
         try {
             Integer treeId = Integer.parseInt(args[0]);
             EMTreeParams params = getParams(treeId);
-            (new Engine()).run(params);
+            Engine engine = new Engine();
+            engine.startExecutionLauncher(args[1], treeId);
+            engine.run(params);
         } catch (NumberFormatException ex) {
             System.out.println("Tree ID must be an integer");
         } catch (Exception ex) {
@@ -45,6 +49,38 @@ public class Engine {
             ExecutionCreator executionCreator = new ExecutionCreator(dbaMarketData, dbaExecutions, numberOfObservations,
                     stepSize, minNumberOfSymbols);
             executionCreator.createExecutionsWhilePossible();
+        } finally {
+            if (dbaExecutions != null) {
+                dbaExecutions.close();
+            }
+            if (dbaMarketData != null) {
+                dbaMarketData.close();
+            }
+        }
+    }
+
+    private void startExecutionLauncher(String jarPath, Integer treeId) {
+        (new Thread(() -> {
+            try {
+                runExecutionLaunching(jarPath, treeId);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        })).start();
+    }
+
+    private void runExecutionLaunching(String jarPath, Integer treeId) throws Exception {
+        DBAExecutions dbaExecutions = null;
+        DBAMarketData dbaMarketData = null;
+        try {
+            dbaExecutions = new DBAExecutionsHib(Constants.DB_NAME_BASE_EXECUTIONS);
+            dbaMarketData = new DBAMarketDataHib(Constants.DB_NAME_BASE_MARKET_DATA_KAIKO);
+            ExecutionLauncher exelauncher = new JARProcessExeLauncher(jarPath);
+            Integer oldestUncompletedExecutionId = dbaExecutions.getOldestUncompletedExecutionId();
+            while (oldestUncompletedExecutionId != null) {
+                exelauncher.submitExecution(treeId, oldestUncompletedExecutionId);
+                oldestUncompletedExecutionId = dbaExecutions.getOldestUncompletedExecutionId();
+            }
         } finally {
             if (dbaExecutions != null) {
                 dbaExecutions.close();

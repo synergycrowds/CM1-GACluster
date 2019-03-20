@@ -159,4 +159,26 @@ public class DBAExecutionsHib implements DBAExecutions {
         manager.close();
         return new ExecutionDescription(execution, executionCurrencyPairs);
     }
+
+    @Override
+    public Integer getOldestUncompletedExecutionId() {
+        final EntityManager manager = factory.createEntityManager();
+        manager.getTransaction().begin();
+
+        List<Execution> executions = (List<Execution>) manager
+                .createQuery("select e from Execution e where e.executionTimestampEnd is null order by e.id")
+                .setMaxResults(1)
+                .getResultList();
+
+        Integer executionId;
+        if (executions.size() <= 0) {
+            executionId = null;
+        } else {
+            executionId = executions.get(0).getId();
+        }
+
+        manager.getTransaction().commit();
+        manager.close();
+        return executionId;
+    }
 }

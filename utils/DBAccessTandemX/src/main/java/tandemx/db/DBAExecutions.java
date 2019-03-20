@@ -62,4 +62,10 @@ public interface DBAExecutions {
      * @return the execution description if it exists, null otherwise
      */
     ExecutionDescription getExecutionDescriptionById(int executionId);
+
+    /**
+     * Get the ID of the execution with the smallest ID which was not completed
+     * @return the ID of oldest uncompleted execution; null if there is no such execution
+     */
+    Integer getOldestUncompletedExecutionId();
 }
