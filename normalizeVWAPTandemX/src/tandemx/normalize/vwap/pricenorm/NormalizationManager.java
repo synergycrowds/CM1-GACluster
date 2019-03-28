@@ -6,9 +6,11 @@ import tandemx.model.CurrencyPair;
 import tandemx.model.Exchange;
 import tandemx.model.HistdataPriceDay;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 public class NormalizationManager {
     private DBAMarketData dbaMarketData;
@@ -65,11 +67,11 @@ public class NormalizationManager {
         }
         PriceNormalizer.normalize(histdataPriceDayRecords, bottom, minVolumeThreshold);
         dbaMarketData.updateHistDataPriceDayList(histdataPriceDayRecords);
-        HistdataPriceDay lastDayHistdata = histdataPriceDayRecords.stream()
-                .max(Comparator.comparing(HistdataPriceDay::getTimestamp)).get();
-        if (lastDayHistdata == null) {
+        Optional<HistdataPriceDay> optLastDayHistdata = histdataPriceDayRecords.stream()
+                .max(Comparator.comparing(HistdataPriceDay::getTimestamp));
+        if (!optLastDayHistdata.isPresent()) {
             return null;
         }
-        return lastDayHistdata.getTimestamp().atStartOfDay();
+        return optLastDayHistdata.get().getTimestamp().atStartOfDay();
     }
 }
