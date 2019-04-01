@@ -10,6 +10,9 @@ import tandemx.rdm.datasource.model.Instrument;
 import tandemx.rdm.util.DataDifferences;
 import tandemx.rdm.util.Pair;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
 import java.time.*;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -17,6 +20,13 @@ import java.util.stream.Collectors;
 public class MarketDataObtainer {
     private DBAMarketData dbaMarketData;
     private KaikoHelper kaiko;
+    private String logFilePath;
+
+    public MarketDataObtainer(DBAMarketData dbaMarketData, KaikoHelper kaiko, String logFilePath) {
+        this.dbaMarketData = dbaMarketData;
+        this.kaiko = kaiko;
+        this.logFilePath = logFilePath;
+    }
 
     public MarketDataObtainer(DBAMarketData dbaMarketData, KaikoHelper kaiko) {
         this.dbaMarketData = dbaMarketData;
@@ -78,7 +88,8 @@ public class MarketDataObtainer {
      * @param currentDay first day for which the data should be aggregated
      * @param nextDay first day that should not be considered for the aggregated data
      * @return aggregated data of a currency pair
-     * @throws Exception if there are problems when obtaining the data (problems connecting to Kaiko or the DB)
+     * @throws Exception if there are problems when obtaining the data (problems connecting to Kaiko or the DB) and there is no log file path
+     * @throws FileNotFoundException if there are problems opening the log file
      */
     private HistdataPriceDay getHistdataDayAggForCurrencyPair(CurrencyPair currencyPair,
                                                               List<Integer> exchangesIds,
@@ -92,13 +103,23 @@ public class MarketDataObtainer {
         LocalDateTime startMoment = currentDay.atStartOfDay();
         LocalDateTime endMoment = nextDay.atStartOfDay();
         for (Integer exchangeId: exchangesIds) {
-             countOhlcvVwap =
-                    kaiko.getCountOhlcvVwapFromExchange(exchangesIdToName.get(exchangeId),
-                            symbolsId2Name.get(currencyPair.getLeftSymbolId()),
-                            symbolsId2Name.get(currencyPair.getRightSymbolId()), startMoment, endMoment);
-            if (countOhlcvVwap != null) {
-                totalPrices += countOhlcvVwap.getPrice() * countOhlcvVwap.getVolume();
-                totalVolume += countOhlcvVwap.getVolume();
+            try {
+                countOhlcvVwap =
+                        kaiko.getCountOhlcvVwapFromExchange(exchangesIdToName.get(exchangeId),
+                                symbolsId2Name.get(currencyPair.getLeftSymbolId()),
+                                symbolsId2Name.get(currencyPair.getRightSymbolId()), startMoment, endMoment);
+                if (countOhlcvVwap != null) {
+                    totalPrices += countOhlcvVwap.getPrice() * countOhlcvVwap.getVolume();
+                    totalVolume += countOhlcvVwap.getVolume();
+                }
+            } catch (Exception ex) {
+                if (this.logFilePath != null) {
+                    try (PrintStream out = new PrintStream(new FileOutputStream(this.logFilePath, true))) {
+                        out.println(ex.getMessage());
+                    }
+                } else {
+                    throw ex;
+                }
             }
         }
         if (totalVolume.compareTo(0.0) > 0) {
