@@ -35,12 +35,12 @@ public class PriceNormalizer {
 
     public static void normalize(List<HistdataPriceDay> lstPrices, double bottom, double minVolumeThreshold) {
 //        abnormal = false;
-        
+
+        lstPrices.get(0).setNormalizedPrice(bottom);
         if (lstPrices.size() >= 2) {
-            lstPrices.get(0).setNormalizedPrice(bottom);
 
             for (int i = 1; i < lstPrices.size(); i++) {
-                if (lstPrices.get(i - 1).getVolume() >= minVolumeThreshold) {
+                if (lstPrices.get(i).getVolume() >= minVolumeThreshold && lstPrices.get(i - 1).getVolume() >= minVolumeThreshold) {
                     double rentability = ((lstPrices.get(i).getPrice() - lstPrices.get(i - 1).getPrice()) / lstPrices.get(i - 1).getPrice());
                     double normalizedPrice = lstPrices.get(i - 1).getNormalizedPrice() * (1 + rentability);
                     lstPrices.get(i).setNormalizedPrice(normalizedPrice);
