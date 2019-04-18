@@ -18,7 +18,7 @@ public class Engine {
             Integer treeId = Integer.parseInt(args[0]);
             EMTreeParams params = getParams(treeId);
             Engine engine = new Engine();
-            engine.startExecutionLauncher(args[1], treeId);
+            engine.startExecutionLauncher(args[1], treeId, params.getWaitBtwSessions());
             engine.run(params);
         } catch (NumberFormatException ex) {
             System.out.println("Tree ID must be an integer");
@@ -60,12 +60,15 @@ public class Engine {
         }
     }
 
-    private void startExecutionLauncher(String jarPath, Integer treeId) {
+    private void startExecutionLauncher(String jarPath, Integer treeId, long millisecondsToWaitBetweenSession) {
         (new Thread(() -> {
-            try {
-                runExecutionLaunching(jarPath, treeId);
-            } catch (Exception e) {
-                e.printStackTrace();
+            while (true) {
+                try {
+                    runExecutionLaunching(jarPath, treeId);
+                    Thread.sleep(millisecondsToWaitBetweenSession);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         })).start();
     }
