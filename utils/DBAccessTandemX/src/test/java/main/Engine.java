@@ -24,7 +24,8 @@ public class Engine {
     private void run() {
 //        runTestMarketData();
 //        runTestExecutions();
-        runTestCurrencyPairToSymbol();
+//        runTestCurrencyPairToSymbol();
+        runTestNumbersOfHistdata();
     }
 
     private void runTestMarketData() {
@@ -82,6 +83,22 @@ public class Engine {
             System.out.println(currencyPairsIdToReferenceSymbol.get(254).getName());
             System.out.println(currencyPairsIdToSymbol.get(254).getId());
             System.out.println(currencyPairsIdToSymbol.get(254).getName());
+        } finally {
+            if (dbaMarketData != null) {
+                dbaMarketData.close();
+            }
+        }
+    }
+
+    private void runTestNumbersOfHistdata() {
+        DBAMarketData dbaMarketData = null;
+        try {
+            dbaMarketData = new DBAMarketDataHib(Constants.DB_NAME_BASE_MARKET_DATA_KAIKO);
+            System.out.println(dbaMarketData.getNumberOfHistdataPriceDaysWithVolumeAboveThreshold(2611,
+                    0, LocalDate.of(2018, 5, 10), LocalDate.of(2018, 8, 15)));
+            System.out.println(dbaMarketData.getNumberOfHistdataPriceDaysWithVolumeAndNormPrice(2611,
+                    0, 4, LocalDate.of(2018, 5, 10),
+                    LocalDate.of(2018, 8, 15)));
         } finally {
             if (dbaMarketData != null) {
                 dbaMarketData.close();

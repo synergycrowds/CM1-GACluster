@@ -396,4 +396,26 @@ public class DBAMarketDataHib implements DBAMarketData {
         manager.getTransaction().commit();
         manager.close();
     }
+
+    @Override
+    public long getNumberOfHistdataPriceDaysWithVolumeAndNormPrice(Integer currencyPairId, double volumeThreshold, double normThreshold, LocalDate timestampBegin, LocalDate timestampEnd) {
+        final EntityManager manager = factory.createEntityManager();
+        manager.getTransaction().begin();
+
+        long result = ((List<Long>) manager
+                .createQuery("select count(h) from HistdataPriceDay h where h.currencyPairId = :cpId and " +
+                        "h.timestamp between :tmstpBegin and :tmstpEnd and h.volume > :vol and h.normalizedPrice < :norm")
+                .setParameter("cpId", currencyPairId)
+                .setParameter("vol", volumeThreshold)
+                .setParameter("tmstpBegin", timestampBegin)
+                .setParameter("tmstpEnd", timestampEnd)
+                .setParameter("norm", normThreshold)
+                .setMaxResults(1)
+                .getResultList())
+                .get(0);
+
+        manager.getTransaction().commit();
+        manager.close();
+        return result;
+    }
 }

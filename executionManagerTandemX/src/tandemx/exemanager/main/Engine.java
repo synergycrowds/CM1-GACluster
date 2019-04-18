@@ -31,7 +31,7 @@ public class Engine {
         long millisecondsToWaitBetweenSession = params.getWaitBtwSessions();
         while (true) {
             runExecutionsCreationSession(params.getNumberOfObservations(), params.getStepSize(),
-                    params.getMinNumberOfSymbols());
+                    params.getMinNumberOfSymbols(), params.getVolumeThreshold(), params.getNormPriceThreshold());
             try {
                 Thread.sleep(millisecondsToWaitBetweenSession);
             } catch (InterruptedException e) {
@@ -40,14 +40,15 @@ public class Engine {
         }
     }
 
-    private void runExecutionsCreationSession(int numberOfObservations, int stepSize, int minNumberOfSymbols) {
+    private void runExecutionsCreationSession(int numberOfObservations, int stepSize, int minNumberOfSymbols,
+                                              double volumeThreshold, double normPriceThreshold) {
         DBAMarketData dbaMarketData = null;
         DBAExecutions dbaExecutions = null;
         try {
             dbaMarketData = new DBAMarketDataHib(Constants.DB_NAME_BASE_MARKET_DATA_KAIKO);
             dbaExecutions = new DBAExecutionsHib(Constants.DB_NAME_BASE_EXECUTIONS);
             ExecutionCreator executionCreator = new ExecutionCreator(dbaMarketData, dbaExecutions, numberOfObservations,
-                    stepSize, minNumberOfSymbols);
+                    stepSize, minNumberOfSymbols, volumeThreshold, normPriceThreshold);
             executionCreator.createExecutionsWhilePossible();
         } finally {
             if (dbaExecutions != null) {
@@ -102,7 +103,8 @@ public class Engine {
             }
 
             return new EMTreeParams(emParams.getWaitBtwSessions(), emParams.getNumberOfObservations(),
-                    emParams.getStepSize(), emParams.getMinNumberOfSymbols());
+                    emParams.getStepSize(), emParams.getMinNumberOfSymbols(), emParams.getVolumeThreshold(),
+                    emParams.getNormPriceThreshold());
         } finally {
             if (dbaTreeParams != null) {
                 dbaTreeParams.close();

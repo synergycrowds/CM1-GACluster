@@ -24,6 +24,12 @@ public class EMParams {
     @Column(name = "min_number_of_symbols")
     private Integer minNumberOfSymbols;
 
+    @Column(name = "volume_threshold")
+    private Double volumeThreshold;
+
+    @Column(name = "norm_price_threshold")
+    private Double normPriceThreshold;
+
     public EMParams() {
     }
 
@@ -65,5 +71,21 @@ public class EMParams {
 
     public void setMinNumberOfSymbols(Integer minNumberOfSymbols) {
         this.minNumberOfSymbols = minNumberOfSymbols;
+    }
+
+    public Double getVolumeThreshold() {
+        return volumeThreshold;
+    }
+
+    public void setVolumeThreshold(Double volumeThreshold) {
+        this.volumeThreshold = volumeThreshold;
+    }
+
+    public Double getNormPriceThreshold() {
+        return normPriceThreshold;
+    }
+
+    public void setNormPriceThreshold(Double normPriceThreshold) {
+        this.normPriceThreshold = normPriceThreshold;
     }
 }

@@ -177,4 +177,18 @@ public interface DBAMarketData {
      * @param symbols list of updated symbols
      */
     void updateSymbols(List<Symbol> symbols);
+
+    /**
+     * Get the number of histdata_price_day entries which have the volume above a threshold and the normalized price
+     * under a threshold. Only entries of a currency pair within a time range are considered.
+     * @param currencyPairId IDof the currency pair considered
+     * @param normThreshold threshold for normalized price (excluded)
+     * @param volumeThreshold threshold for volume (excluded)
+     * @param timestampBegin earliest timestamp considered (included)
+     * @param timestampEnd latest timestamp considered (included)
+     * @return number of entries which satisfy the requirements
+     */
+    long getNumberOfHistdataPriceDaysWithVolumeAndNormPrice(Integer currencyPairId, double volumeThreshold,
+                                                            double normThreshold, LocalDate timestampBegin,
+                                                            LocalDate timestampEnd);
 }

@@ -14,14 +14,18 @@ public class ExecutionCreator {
     private int numberOfObservations;
     private int stepSize;
     private int minNumberOfSymbols;
+    private double volumeThreshold;
+    private double normPriceThreshold;
 
     public ExecutionCreator(DBAMarketData dbaMarketData, DBAExecutions dbaExecutions, int numberOfObservations,
-                            int stepSize, int minNumberOfSymbols) {
+                            int stepSize, int minNumberOfSymbols, double volumeThreshold, double normPriceThreshold) {
         this.dbaMarketData = dbaMarketData;
         this.dbaExecutions = dbaExecutions;
         this.numberOfObservations = numberOfObservations;
         this.stepSize = stepSize;
         this.minNumberOfSymbols = minNumberOfSymbols;
+        this.volumeThreshold = volumeThreshold;
+        this.normPriceThreshold = normPriceThreshold;
     }
 
     /**
@@ -82,8 +86,8 @@ public class ExecutionCreator {
         List<Integer> executionCurrencyPairIds = new ArrayList<>();
         for (CurrencyPair currencyPair: currencyPairs) {
             long numberOfNonZeroVolumeEntries =
-                    dbaMarketData.getNumberOfHistdataPriceDaysWithVolumeAboveThreshold(currencyPair.getId(), 0,
-                            dataTimestampBegin, dataTimestampEnd);
+                    dbaMarketData.getNumberOfHistdataPriceDaysWithVolumeAndNormPrice(currencyPair.getId(),
+                            volumeThreshold, normPriceThreshold, dataTimestampBegin, dataTimestampEnd);
             if (numberOfObservations <= numberOfNonZeroVolumeEntries) {
                 executionCurrencyPairIds.add(currencyPair.getId());
             }
