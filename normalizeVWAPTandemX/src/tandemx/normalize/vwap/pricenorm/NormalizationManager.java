@@ -62,8 +62,13 @@ public class NormalizationManager {
         } else {
             histdataPriceDayRecords = dbaMarketData.getHistDataPriceDayAfterTimestamp(exchangeId, currencyPair.getId(),
                     lastNormalizedRecord.getTimestamp());
-            histdataPriceDayRecords.add(0, lastNormalizedRecord);
-            bottom = lastNormalizedRecord.getNormalizedPrice();
+            if (histdataPriceDayRecords.size() > 0) {
+                histdataPriceDayRecords.add(0, lastNormalizedRecord);
+                bottom = lastNormalizedRecord.getNormalizedPrice();
+            } else {
+                histdataPriceDayRecords.add(lastNormalizedRecord);
+                bottom = lastNormalizedRecord.getNormalizedPrice();
+            }
         }
         PriceNormalizer.normalize(histdataPriceDayRecords, bottom, minVolumeThreshold);
         dbaMarketData.updateHistDataPriceDayList(histdataPriceDayRecords);

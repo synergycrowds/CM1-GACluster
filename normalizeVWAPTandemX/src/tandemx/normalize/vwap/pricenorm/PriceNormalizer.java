@@ -36,7 +36,9 @@ public class PriceNormalizer {
     public static void normalize(List<HistdataPriceDay> lstPrices, double bottom, double minVolumeThreshold) {
 //        abnormal = false;
 
-        lstPrices.get(0).setNormalizedPrice(bottom);
+        if (lstPrices.size() > 0) {
+            lstPrices.get(0).setNormalizedPrice(bottom);
+        }
         if (lstPrices.size() >= 2) {
 
             for (int i = 1; i < lstPrices.size(); i++) {
