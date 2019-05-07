@@ -40,8 +40,8 @@
         <properties>
             <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver" />
             <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/treeparamsTandemX" />
-            <property name="javax.persistence.jdbc.user" value="postgres" />
-            <property name="javax.persistence.jdbc.password" value="postgres" />
+            <property name="javax.persistence.jdbc.user" value="sygondbuser01" />
+            <property name="javax.persistence.jdbc.password" value="Sygon19SC@20#F" />
             <property name="hibernate.dialect" value="org.hibernate.dialect.PostgresPlusDialect"/>
 
             <property name="hibernate.show_sql" value="false" />
@@ -67,8 +67,8 @@
         <properties>
             <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver" />
             <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/marketData-Kaiko" />
-            <property name="javax.persistence.jdbc.user" value="postgres" />
-            <property name="javax.persistence.jdbc.password" value="postgres" />
+            <property name="javax.persistence.jdbc.user" value="sygondbuser01" />
+            <property name="javax.persistence.jdbc.password" value="Sygon19SC@20#F" />
             <property name="hibernate.dialect" value="org.hibernate.dialect.PostgresPlusDialect"/>
 
             <property name="hibernate.show_sql" value="false" />
@@ -93,8 +93,8 @@
         <properties>
             <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver" />
             <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/executionsTandemX" />
-            <property name="javax.persistence.jdbc.user" value="postgres" />
-            <property name="javax.persistence.jdbc.password" value="postgres" />
+            <property name="javax.persistence.jdbc.user" value="sygondbuser01" />
+            <property name="javax.persistence.jdbc.password" value="Sygon19SC@20#F" />
             <property name="hibernate.dialect" value="org.hibernate.dialect.PostgresPlusDialect"/>
 
             <property name="hibernate.show_sql" value="false" />
