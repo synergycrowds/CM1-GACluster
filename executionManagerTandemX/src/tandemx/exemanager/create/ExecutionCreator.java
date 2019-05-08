@@ -2,6 +2,7 @@ package tandemx.exemanager.create;
 
 import tandemx.db.DBAExecutions;
 import tandemx.db.DBAMarketData;
+import tandemx.exemanager.pricenorm.PriceNormalizer;
 import tandemx.model.*;
 
 import java.time.LocalDate;
@@ -32,11 +33,11 @@ public class ExecutionCreator {
      * Create executions while data is available
      */
     public void createExecutionsWhilePossible() {
-        NormalizedStatus normalizedStatus = dbaMarketData.getNormalizedStatus();
-        if (normalizedStatus == null || normalizedStatus.getLastDate() == null) {
+        HistdataPriceDay mostRecentHDPD = dbaMarketData.getMostRecentHistdataPriceDay();
+        if (mostRecentHDPD == null || mostRecentHDPD.getTimestamp() == null) {
             return;
         }
-        LocalDate lastNormalizedDate = normalizedStatus.getLastDate().toLocalDate();
+        LocalDate lastDateForWhichDataIsAvailable = mostRecentHDPD.getTimestamp();
         Execution latestExecution = dbaExecutions.getLatestExecution();
         LocalDate latestExecutionDate;
         if (latestExecution != null) {
@@ -49,7 +50,7 @@ public class ExecutionCreator {
             latestExecutionDate = earliestHistdataPriceDay.getTimestamp().minusDays(stepSize).plusDays(numberOfObservations - 1);
         }
         LocalDate newDataTimestampEnd = latestExecutionDate.plusDays(stepSize);
-        if (newDataTimestampEnd.isAfter(lastNormalizedDate)) {
+        if (newDataTimestampEnd.isAfter(lastDateForWhichDataIsAvailable)) {
             return;
         }
         List<CurrencyPair> currencyPairs = dbaMarketData.getCurrencyPairs();
@@ -59,7 +60,7 @@ public class ExecutionCreator {
         }
         LocalDate newDataTimestampBegin;
         // TODO: 2/28/2019 check if it would be more efficient to create executions by ref symbol, rather than day (might check less intervals for zero volumes)
-        while(!newDataTimestampEnd.isAfter(lastNormalizedDate)) {
+        while(!newDataTimestampEnd.isAfter(lastDateForWhichDataIsAvailable)) {
             newDataTimestampBegin = newDataTimestampEnd.minusDays(numberOfObservations - 1);
             for (Integer refSymbolId: refSymb2CP.keySet()) {
                 ExecutionDescription executionDescription =
@@ -86,10 +87,16 @@ public class ExecutionCreator {
         List<Integer> executionCurrencyPairIds = new ArrayList<>();
         for (CurrencyPair currencyPair: currencyPairs) {
             long numberOfNonZeroVolumeEntries =
-                    dbaMarketData.getNumberOfHistdataPriceDaysWithVolumeAndNormPrice(currencyPair.getId(),
-                            volumeThreshold, normPriceThreshold, dataTimestampBegin, dataTimestampEnd);
+                    dbaMarketData.getNumberOfHistdataPriceDaysWithVolumeAboveThreshold(currencyPair.getId(),
+                            volumeThreshold, dataTimestampBegin, dataTimestampEnd);
             if (numberOfObservations <= numberOfNonZeroVolumeEntries) {
-                executionCurrencyPairIds.add(currencyPair.getId());
+                List<HistdataPriceDay> histdataPriceDays =
+                        dbaMarketData.getHistdataPriceDaysTimeRangeCurrencyPair(dataTimestampBegin, dataTimestampEnd,
+                                currencyPair.getId());
+                PriceNormalizer.normalize(histdataPriceDays, 1, volumeThreshold);
+                if (histdataPriceDays.stream().filter(h -> h.getNormalizedPrice() >= normPriceThreshold).count() <= 0) {
+                    executionCurrencyPairIds.add(currencyPair.getId());
+                }
             }
         }
         if (executionCurrencyPairIds.size() >= minNumberOfSymbols) {
