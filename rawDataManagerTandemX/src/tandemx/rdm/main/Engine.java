@@ -37,7 +37,7 @@ public class Engine {
 
     private void run(RDMTreeParams params) {
         long millisecondsToWait = params.getWaitBtwSessions();
-//        runUpdateSymbols(Constants.DB_NAME_BASE_MARKET_DATA_KAIKO);
+        runUpdateSymbols(Constants.DB_NAME_BASE_MARKET_DATA_KAIKO);
         String logFilePath = "errors.log";
         while (true) {
             System.out.println("Session started");
